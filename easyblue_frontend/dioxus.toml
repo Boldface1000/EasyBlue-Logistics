@@ -32,4 +32,3 @@ identifier = "com.easyblue.logistics"
 publisher = "Godwin Eferideoghene"
 icon = ["assets/icon-192.png"]
 resources = ["assets/*"]
-

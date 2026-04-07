@@ -2,21 +2,43 @@
 use dioxus::prelude::*;
 use dioxus_router::prelude::*;
 
-// --- STEP 1: LINK TO YOUR EXTERNAL FOLDERS ---
-mod components; // Looks for src/components/mod.rs
-mod services;   // Looks for src/services/mod.rs
-mod offline;    // Looks for src/offline/mod.rs
+// --- STEP 1: MODULE REGISTRY ---
+mod components; 
+mod services;   
+mod offline;    
 
-// --- STEP 2: IMPORT THE HIGH-END WELCOME PAGE ---
-// This replaces the old placeholder Welcome component at the bottom
+// --- STEP 2: IMPORTS ---
 use components::welcome::Welcome; 
+use components::signup::GetStarted; // Added missing semicolon here
+use components::login::Login;          
+use components::password_reset::PasswordReset;
 
 #[derive(Routable, Clone)]
 #[rustfmt::skip]
 enum Route {
+    // These pages sit OUTSIDE the NavBar (Full screen onboarding)
+    #[route("/")]
+    Welcome {},
+
+    #[route("/signup")]
+    GetStarted {}, 
+
+    #[route("/login")]
+    Login {},                          
+
+    #[route("/forgot-password")]
+    PasswordReset {},                   
+
+    // These pages sit INSIDE the NavBar layout
     #[layout(NavBar)]
-        #[route("/")]
-        Welcome {}, // Now calling the component from components/welcome.rs
+        #[route("/dashboard-rider")]
+        RiderDashboard {},
+        #[route("/dashboard-vendor")]
+        VendorDashboard {},
+        #[route("/dashboard-customer")]
+        CustomerDashboard {},
+        
+        // Added placeholders to match your NavBar links
         #[route("/book")]
         BookingForm {},
         #[route("/map")]
@@ -48,6 +70,7 @@ fn NavBar(cx: Scope) -> Element {
                     div { class: "nav-icon", "🏠" }
                     span { "Home" }
                 }
+                // Updated to point to specific Routes defined in the enum
                 Link { to: Route::BookingForm {}, class: "nav-item",
                     div { class: "nav-icon", "📦" }
                     span { "Book" }
@@ -66,7 +89,9 @@ fn NavBar(cx: Scope) -> Element {
 }
 
 // --- STEP 4: PLACEHOLDERS ---
-// (We keep these here until we move them to their own files)
+#[component] fn RiderDashboard(cx: Scope) -> Element { render! { div { "Rider Dashboard" } } }
+#[component] fn VendorDashboard(cx: Scope) -> Element { render! { div { "Vendor Dashboard" } } }
+#[component] fn CustomerDashboard(cx: Scope) -> Element { render! { div { "Customer Dashboard" } } }
 #[component] fn BookingForm(cx: Scope) -> Element { render! { div { "Booking Screen" } } }
 #[component] fn LiveMap(cx: Scope) -> Element { render! { div { "Real-time Tracking" } } }
 #[component] fn UserProfile(cx: Scope) -> Element { render! { div { "Your Profile" } } }

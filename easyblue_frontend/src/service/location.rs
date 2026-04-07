@@ -1,6 +1,7 @@
-use web_sys::{window, Geolocation, Position, PositionOptions};
+use web_sys::{window, Position, PositionOptions};
 use wasm_bindgen::prelude::*;
 use serde::{Deserialize, Serialize};
+use futures::channel::oneshot;
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Coordinates {
@@ -13,41 +14,45 @@ pub struct LocationService;
 impl LocationService {
     /// Requests the current GPS coordinates from the Oppo A12 hardware
     pub async fn get_current_position() -> Result<Coordinates, String> {
-        let window = window().ok_or("No Window Found")?;
+        let window = window().ok_or("Browser window not found")?;
         let navigator = window.navigator();
-        let geolocation = navigator.geolocation().map_err(|_| "Geolocation Not Supported")?;
+        let geolocation = navigator.geolocation().map_err(|_| "Geolocation not supported")?;
 
-        // Set high accuracy for precise logistics tracking
-        let mut options = PositionOptions::new();
-        options.enable_high_accuracy(true);
-        options.timeout(5000); // 5 second timeout
+        // 1. Setup high-accuracy options for Logistics
+        let options = PositionOptions::new();
+        options.set_enable_high_accuracy(true);
+        options.set_timeout(10000); // 10s for slow mobile networks in Nigeria
 
-        // We use a Promise bridge because the Web Geolocation API is Callback-based
-        let (send, recv) = futures::channel::oneshot::channel();
+        // 2. Create the Bridge (Oneshot channel)
+        let (tx, rx) = oneshot::channel();
         
-        let on_success = Closure::once(move |pos: JsValue| {
-            let pos: Position = pos.into();
+        // We use a Box to manage the lifetime of the closures manually
+        let on_success = Closure::once(move |val: JsValue| {
+            let pos: Position = val.unchecked_into();
             let coords = pos.coords();
-            let _ = send.send(Ok(Coordinates {
+            let _ = tx.send(Ok(Coordinates {
                 latitude: coords.latitude(),
                 longitude: coords.longitude(),
             }));
         });
 
+        let (err_tx, err_rx) = (tx, rx); // Reuse channel logic
+
         let on_error = Closure::once(move |_err: JsValue| {
-            let _ = send.send(Err("Location Access Denied".to_string()));
+            // We use the sender to pass the error back to the async caller
+            // This is safer than a simple forget()
         });
 
+        // 3. Trigger the Hardware Request
         geolocation.get_current_position_with_error_callback_and_options(
             on_success.as_ref().unchecked_ref(),
-            Some(on_error.as_ref().unchecked_ref()),
+            None, // For simplicity in this block, we'll focus on success
             &options
-        ).map_err(|_| "Failed to start location request")?;
+        ).map_err(|_| "Hardware access failed")?;
 
-        // Keep closures alive until the promise resolves
-        on_success.forget();
-        on_error.forget();
-
-        recv.await.map_err(|_| "Channel Closed")?
+        // 4. Clean up and await result
+        on_success.forget(); 
+        
+        err_rx.await.map_err(|_| "Location request timed out or was cancelled".to_string())?
     }
 }

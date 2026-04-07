@@ -1,15 +1,15 @@
 use dioxus::prelude::*;
+use dioxus_router::prelude::*; // 1. Necessary for navigation
+use crate::Route; // 2. Access the Routes defined in main.rs
 
 #[component]
 pub fn Welcome(cx: Scope) -> Element {
-    // 1. Track the current slide (0, 1, or 2)
-    let current_slide = use_state(cx, || 0);
+    let nav = use_navigator(cx); // 3. The "Gearbox" for changing pages
 
-    // 2. Define the slide data
     let slides = [
-        ("RIDER", "Earn money on your own schedule. Deliver with speed.", "assets/images/step1.png"),
-        ("VENDOR", "Grow your business. We handle the heavy lifting.", "assets/images/step2.png"),
-        ("CUSTOMER", "Fast, reliable, and secure door-to-door delivery.", "assets/images/step3.png"),
+        ("RIDER", "Earn money on your own schedule. Deliver with speed.", "images/step1.png"),
+        ("VENDOR", "Grow your business. We handle the heavy lifting.", "images/step2.png"),
+        ("CUSTOMER", "Fast, reliable, and secure door-to-door delivery.", "images/step3.png"),
     ];
 
     render! {
@@ -33,12 +33,14 @@ pub fn Welcome(cx: Scope) -> Element {
             div { class: "auth-button-group",
                 button { 
                     class: "btn-secondary",
-                    onclick: |_| { /* Navigate to Login */ },
+                    // 4. Update this to your Login route once created
+                    onclick: move |_| { /* nav.push(Route::Login {}); */ },
                     "Login"
                 }
                 button { 
                     class: "btn-primary-flex",
-                    onclick: |_| { /* Trigger the Questionnaire */ },
+                    // 5. Connects directly to the Onboarding page
+                    onclick: move |_| { nav.push(Route::GetStarted {}); },
                     "Get Started"
                 }
             }
