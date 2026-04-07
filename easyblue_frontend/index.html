@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EasyBlue Logistics</title>
+    
+    <meta name="description" content="EasyBlue Logistics: Seamless simultaneous pickup and drop-off services for vendors and riders.">
+    <meta name="keywords" content="Logistics, Nigeria, Delivery, EasyBlue, PWA">
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+
+    <meta property="og:title" content="EasyBlue Logistics">
+    <meta property="og:description" content="The ultimate logistics engine for modern delivery.">
+    <meta property="og:image" content="assets/og-preview.png">
+    <meta property="og:type" content="website">
+
+    <link rel="manifest" href="assets/manifest.json">
+    <link rel="stylesheet" href="assets/style.css">
+    <meta name="theme-color" content="#FF4500">
+    
+    <link rel="apple-touch-icon" href="assets/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+
+<body>
+    <div id="main">
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh;">
+            <div class="spinner"></div>
+            <h2 style="color: white; font-family: sans-serif; margin-top: 20px;">EasyBlue LOGISTICS</h2>
+        </div>
+    </div>
+
+    <div id="install-prompt" class="glass-card">
+        <p>Install EasyBlue for a faster experience on your Oppo A12</p>
+        <button id="install-button" class="install-btn">Install Now</button>
+    </div>
+    
+    <div id="ios-install-instructions" class="ios-prompt">
+    <p>To install <strong>EasyBlue</strong> on your iPhone:</p>
+    <p>1. Tap the <strong>Share</strong> button (the square with an arrow) below.</p>
+    <p>2. Scroll down and tap <strong>"Add to Home Screen"</strong>.</p>
+</div>
+
+
+    <script>
+    // 1. Service Worker Registration
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(reg => console.log('EasyBlue SW Registered', reg))
+                .catch(err => console.log('SW Registration Failed', err));
+        });
+    }
+
+    // 2. Android / Chrome Install Logic
+    let deferredPrompt;
+    const installPrompt = document.getElementById('install-prompt');
+    const installBtn = document.getElementById('install-button');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent the default mini-infobar from appearing
+        e.preventDefault();
+        // Stash the event so it can be triggered later
+        deferredPrompt = e;
+        // Show our custom Glassmorphic prompt
+        if (installPrompt) {
+            installPrompt.style.display = 'block';
+        }
+    });
+
+    if (installBtn) {
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                // Show the native Android install banner
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('User accepted the EasyBlue install');
+                }
+                // Hide our custom prompt regardless of choice
+                installPrompt.style.display = 'none';
+                deferredPrompt = null;
+            }
+        });
+    }
+
+    // 3. iOS Detection & Instructions
+    const isIos = () => {
+        const userAgent = window.navigator.userAgent.toLowerCase();
+        return /iphone|ipad|ipod/.test(userAgent);
+    };
+
+    // Check if the app is already running in standalone mode
+    const isInStandaloneMode = () => 
+        ('standalone' in window.navigator) && (window.navigator.standalone);
+
+    const iosPrompt = document.getElementById('ios-install-instructions');
+
+    if (isIos() && !isInStandaloneMode() && iosPrompt) {
+        // Show the custom iOS instructions instead of the Android button
+        iosPrompt.style.display = 'block';
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,35 @@
+[application]
+# The name of the binary to build
+name = "easyblue_frontend"
+
+# The HTML file that acts as the shell
+template = "index.html"
+
+# Where your CSS, Icons, and Manifest live
+asset_dir = "assets"
+
+[web.app]
+# The title of the window in the browser
+title = "EasyBlue Logistics"
+
+[web.watcher]
+# Files to watch for "Hot Reloading" on your device
+watch_path = ["src", "assets"]
+
+[web.resource]
+# External CSS or JS libraries (we keep this empty as we use local assets)
+style = []
+script = []
+
+[web.resource.dev]
+# Development-only resources
+style = []
+script = []
+
+[bundle]
+# PWA specific settings
+identifier = "com.easyblue.logistics"
+publisher = "Godwin Eferideoghene"
+icon = ["assets/icon-192.png"]
+resources = ["assets/*"]
+

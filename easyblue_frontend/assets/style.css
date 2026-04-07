@@ -1,0 +1,172 @@
+/* EasyBlue Core Design System */
+:root {
+    --midnight-navy: #001F3F;
+    --red-orange: #FF4500;
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --text-light: #F8F9FA;
+    --safe-area-bottom: env(safe-area-inset-bottom);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--midnight-navy);
+    color: var(--text-light);
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Glassmorphism Container */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 15px;
+    padding: 20px;
+    margin: 10px;
+}
+
+/* Bottom Navigation Bar */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: calc(65px + var(--safe-area-bottom));
+    background: rgba(0, 31, 63, 0.95);
+    backdrop-filter: blur(15px);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid var(--glass-border);
+    padding-bottom: var(--safe-area-bottom);
+    z-index: 1000;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: rgba(248, 249, 250, 0.6);
+    text-decoration: none;
+    font-size: 10px;
+    transition: 0.3s ease;
+}
+
+.nav-item.active {
+    color: var(--red-orange);
+}
+
+.nav-icon {
+    font-size: 24px;
+    margin-bottom: 4px;
+}
+
+/* Add to Home Screen (A2HS) Menu */
+#install-prompt {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    background: white;
+    color: #333;
+    border-radius: 12px;
+    padding: 15px;
+    display: none; /* Controlled by Service Worker JS */
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    z-index: 2000;
+    animation: slideIn 0.4s ease-out;
+}
+
+.install-btn {
+    background-color: var(--red-orange);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    float: right;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-100px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Booking Form Inputs */
+input, select {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    color: white;
+    box-sizing: border-box;
+}
+
+input:focus {
+    border-color: var(--red-orange);
+    outline: none;
+}
+
+/* --- Loading Spinner Animation --- */
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.1); /* Faded Navy/White circle */
+    border-top: 5px solid var(--red-orange);    /* Your Brand Accent */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Optional: Pulse effect for the "EasyBlue" text */
+#main h2 {
+    animation: pulse 2s ease-in-out infinite;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+
+/* iOS specific "Add to Home Screen" instructions */
+.ios-prompt {
+    position: fixed;
+    bottom: 80px; /* Sits just above your Bottom Nav Bar */
+    left: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    padding: 15px;
+    border-radius: 12px;
+    display: none; /* Hidden by default */
+    z-index: 2000;
+}
+
+.ios-prompt::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 10px 10px 0;
+    border-style: solid;
+    border-color: rgba(255, 255, 255, 0.9) transparent transparent;
+}

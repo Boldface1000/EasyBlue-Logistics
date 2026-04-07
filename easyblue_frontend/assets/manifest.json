@@ -1,0 +1,32 @@
+{
+  "short_name": "EasyBlue",
+  "name": "EasyBlue Logistics & Deliveries",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#001F3F",
+  "theme_color": "#FF4500",
+  "display": "standalone",
+  "scope": "/",
+  "orientation": "portrait",
+  "description": "Professional logistics handling pickups and dropoffs for vendors and customers.",
+  "screenshots": [
+    {
+      "src": "screenshot-mobile.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "label": "EasyBlue Booking Screen"
+    }
+  ]
+}
